@@ -39,6 +39,7 @@ def add_user(user):
     new_user = User(id=new_id, full_name=user[0], email=user[1], password=user[2])
     session.add(new_user)
     session.commit()
+    session.refresh()
 
 
 def is_user_present(user_data):
@@ -62,6 +63,7 @@ def add_booking(new_event_data):
     new_event = Reservation(id=new_id, date=new_event_data[0], time=new_event_data[1], event=new_event_data[2], status=new_event_data[3], user=user_name)
     session.add(new_event)
     session.commit()
+    session.refresh()
 
 
 

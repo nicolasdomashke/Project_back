@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse, PlainTextResponse
 import sys
 sys.path.append("..")
 from database.bd import get_booking_info, add_booking, is_user_present, is_user_data_correct, add_user, is_event_present
+import re
 
 app = FastAPI()
 
@@ -25,22 +26,30 @@ app.add_middleware(
 )
 
 
-def get_time():  # return tuple
-    return 0
+def is_valid_email(email):
+    pattern = r'^\w+@[a-zA-Z]+\.[a-zA-Z]+$'
+    regex = re.compile(pattern)
+    match = regex.fullmatch(email)
+    return match is not None
 
+def is_valid_password(password):
+    pattern = r'^(?=.*\d)(?=.*[A-Z])[\w]{8,16}$'
+    regex = re.compile(pattern)
+    match = regex.fullmatch(password)
+    return match is not None
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
     return {"message": "Welcome to the main page."}
 
 
-@app.get("/booking")
+@app.get("/reservation")
 async def get_booking_table() -> dict:
     booking_table = get_booking_info()
     return {"data": booking_table}
 
 
-@app.post("/booking")
+@app.post("/reservation")
 async def post_booking_table(new_user: dict):
     global user_data_global
     if not user_data_global:
@@ -58,8 +67,8 @@ async def post_login(user_data: dict):
         if is_user_data_correct(data):
             user_data_global = data
             RedirectResponse("/")
-    #    else:
-    #        await incorrect_password()
+        else:
+            RedirectResponse("/login")
 
 
 @app.get("/login")
@@ -67,21 +76,16 @@ async def get_login():
     return {"data": "Login page"}
 
 
-@app.put("/login")
-async def incorrect_password():
-    return {"data": "Wrong password!"}
-
-
 @app.post("/registration")
 async def post_registration(user_data: dict):
     data = user_data['data']
     if is_user_present(data[1]):
-        #await login_taken()
+        RedirectResponse("/registration")
         pass
-    elif False:
-        pass # email check
-    elif False:
-        pass # password check
+    elif not is_valid_email(data[1]):
+        RedirectResponse("/registration")
+    elif not is_valid_password(data[2]):
+        RedirectResponse("/registration")
     else:
         add_user(user_data)
 
@@ -89,8 +93,3 @@ async def post_registration(user_data: dict):
 @app.get("/registration")
 async def get_registration():
     return {"data": "Registration page"}
-
-
-@app.put("/registration")
-async def login_taken():
-    return {"data": "Username is already taken"}
