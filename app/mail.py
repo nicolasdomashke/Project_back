@@ -2,10 +2,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-def send_message(user_mail, text):
+def send_message(text):
     msg = MIMEMultipart()
 
-    receiver = user_mail
+    receiver = text[0]
     message = f"Уважаемый {text[1]}! Вы записаны на день {text[2]}"
 
     msg.attach(MIMEText(message, 'plain'))

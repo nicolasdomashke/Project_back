@@ -61,7 +61,7 @@ async def post_booking_table(new_event: dict):
     #else:
     #    RedirectResponse("/login")
     data = [new_event["email"], new_event["name"], new_event["date"]]
-    send_message(data[1], new_event)
+    send_message(data)
     add_booking(data)
 
 
