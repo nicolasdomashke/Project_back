@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse, PlainTextResponse
 import sys
 sys.path.append("..")
 from database.bd import get_booking_info, add_booking, is_user_present, is_user_data_correct, add_user, is_event_present
-from mail import send_message
+from app.mail import send_message
 import re
 
 app = FastAPI()
@@ -57,7 +57,7 @@ async def post_booking_table(new_event: dict):
         data = new_event["data"]
         if not is_event_present(data):
             send_message(user_data_global[1], new_event)
-            add_booking(data)
+            add_booking(data, user_data_global[0])
     else:
         RedirectResponse("/login")
 
@@ -72,6 +72,8 @@ async def post_login(user_data: dict):
             RedirectResponse("/")
         else:
             RedirectResponse("/login")
+    else:
+        RedirectResponse("/login")
 
 
 @app.get("/login")
