@@ -45,9 +45,21 @@ async def read_root() -> dict:
 
 
 @app.get("/reservation")
-async def get_booking_table() -> dict:
+async def get_booking_table():
     booking_table = get_booking_info()
-    return {"data": booking_table}
+    booking_matrix = []
+    for row in booking_table:
+        row_data = [
+            str(row.id),
+            str(row.date),
+            str(row.time),
+            row.event,
+            row.status,
+            str(row.user_id)
+        ]
+        booking_matrix.append(row_data)
+
+    return booking_matrix
 
 
 @app.post("/reservation")
