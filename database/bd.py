@@ -1,6 +1,6 @@
 from sqlalchemy import MetaData, Integer, String, ForeignKey, Table, Column, Date, Time, create_engine, func
 from sqlalchemy.orm import sessionmaker, relationship, declarative_base
-
+from datetime import datetime
 
 metadata = MetaData()
 Base = declarative_base()
@@ -63,9 +63,11 @@ def is_user_data_correct(user_data):
 
 
 def add_booking(new_event_data, user_info):
+    sql_date = datetime.strptime(new_event_data[0], "%Y-%m-%d").date()
+    sql_time = datetime.strptime(new_event_data[1], "%H:%M:%S").time()
     new_id = session.query(func.max(Reservation.id)).scalar() + 1
     user_name = session.query(User).filter_by(email=user_info).first()
-    new_event = Reservation(id=new_id, date=new_event_data[0], time=new_event_data[1], event=new_event_data[2], status=new_event_data[3], user_id=user_name)
+    new_event = Reservation(id=new_id, date=sql_date, time=sql_time, event=new_event_data[2], status=new_event_data[3], user_id=user_name)
     session.add(new_event)
     session.commit()
 
@@ -77,7 +79,14 @@ def is_event_present(event_data):
         return event.time == event_data[1]
     return False
 
-#new_event = Reservation(id=1, date="12-25", time="12:00", event="Film watching", status="waiting for correct time", user_id=1)
+
+init_db()
+date_str = "2023-12-25"
+time_str = "12:00:00"
+sql_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+sql_time = datetime.strptime(time_str, "%H:%M:%S").time()
+
+#new_event = Reservation(id=1, date=sql_date, time=sql_time, event="Film watching", status="waiting for correct time", user_id=1)
 #new_usr = User(id=1, full_name="Nick Dom", email="nicolasdomashke@gmail.com", password="Aasdghg1f")
 #user_to_delete = session.query(User).filter_by(id=0).first()
 #session.delete(user_to_delete)
