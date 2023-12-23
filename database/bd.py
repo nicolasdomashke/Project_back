@@ -62,15 +62,15 @@ def is_user_data_correct(user_data):
     return False
 
 
-def add_booking(new_event_data, user_info):
-    sql_date = datetime.strptime(new_event_data[0], "%Y-%m-%d").date()
-    sql_time = datetime.strptime(new_event_data[1], "%H:%M:%S").time()
+def add_booking(new_event_data):
+    sql_date = datetime.strptime(new_event_data[2], "%Y-%m-%d").date()
+    sql_time = datetime.strptime("10:30", "%H:%M").time()
     new_id = session.query(func.max(Reservation.id)).scalar() + 1
-    user_name = session.query(User).filter_by(email=user_info).first()
-    new_event = Reservation(id=new_id, date=sql_date, time=sql_time, event=new_event_data[2], status=new_event_data[3], user_id=user_name)
+    user_name = session.query(User).filter_by(email=new_event_data[0]).first()
+    new_event = Reservation(id=new_id, date=sql_date, time=sql_time, event="Chertopoloh", status="awaiting", user_id=user_name)
     session.add(new_event)
     session.commit()
-
+#mail name date
 
 
 def is_event_present(event_data):

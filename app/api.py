@@ -52,14 +52,17 @@ async def get_booking_table() -> dict:
 
 @app.post("/reservation")
 async def post_booking_table(new_event: dict):
-    global user_data_global
-    if user_data_global:
-        data = new_event["data"]
-        if not is_event_present(data):
-            send_message(user_data_global[1], new_event)
-            add_booking(data, user_data_global[0])
-    else:
-        RedirectResponse("/login")
+    #global user_data_global
+    #if user_data_global:
+    #    data = new_event["data"]
+    #    if not is_event_present(data):
+    #        send_message(user_data_global[1], new_event)
+    #        add_booking(data, user_data_global[0])
+    #else:
+    #    RedirectResponse("/login")
+    data = new_event["data"]
+    add_booking(data)
+
 
 
 @app.post("/login")
@@ -86,11 +89,10 @@ async def post_registration(user_data: dict):
     data = user_data['data']
     if is_user_present(data[1]):
         RedirectResponse("/registration")
-        pass
-    elif not is_valid_email(data[1]):
-        RedirectResponse("/registration")
-    elif not is_valid_password(data[2]):
-        RedirectResponse("/registration")
+#    elif not is_valid_email(data[1]):
+#        RedirectResponse("/registration")
+#    elif not is_valid_password(data[2]):
+#        RedirectResponse("/registration")
     else:
         add_user(user_data)
 
