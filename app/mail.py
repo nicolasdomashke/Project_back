@@ -6,7 +6,7 @@ def send_message(user_mail, text):
     msg = MIMEMultipart()
 
     receiver = user_mail
-    message = f"Вы записаны на событие {text[2]} на время {text[1]}"
+    message = f"Уважаемый {text[1]}! Вы записаны на день {text[2]}"
 
     msg.attach(MIMEText(message, 'plain'))
     msg["Subject"] = "Информация о вашем бронировании"

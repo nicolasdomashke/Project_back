@@ -9,7 +9,9 @@ Session = None
 session = None
 
 def init_db():
-    global engine, Session, session
+    global engine, Session, session, metadata, Base
+    metadata = MetaData()
+    Base = declarative_base()
     engine = create_engine('sqlite:///db.sqlite3')
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -67,7 +69,8 @@ def add_booking(new_event_data):
     sql_time = datetime.strptime("10:30", "%H:%M").time()
     new_id = session.query(func.max(Reservation.id)).scalar() + 1
     user_name = session.query(User).filter_by(email=new_event_data[0]).first()
-    new_event = Reservation(id=new_id, date=sql_date, time=sql_time, event="Chertopoloh", status="awaiting", user_id=user_name)
+    usr_id = user_name.id
+    new_event = Reservation(id=new_id, date=sql_date, time=sql_time, event="Chertopoloh", status="awaiting", user_id=usr_id)
     session.add(new_event)
     session.commit()
 #mail name date
@@ -80,11 +83,8 @@ def is_event_present(event_data):
     return False
 
 
-init_db()
-date_str = "2023-12-25"
-time_str = "12:00:00"
-sql_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-sql_time = datetime.strptime(time_str, "%H:%M:%S").time()
+#init_db()
+#add_booking(["nicolasdomashke@gmail.com", "wsadsfs", "2023-12-25"])
 
 #new_event = Reservation(id=1, date=sql_date, time=sql_time, event="Film watching", status="waiting for correct time", user_id=1)
 #new_usr = User(id=1, full_name="Nick Dom", email="nicolasdomashke@gmail.com", password="Aasdghg1f")
