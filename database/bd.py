@@ -4,15 +4,13 @@ from datetime import datetime
 
 metadata = MetaData()
 Base = declarative_base()
-engine = None
-Session = None
-session = None
+path = r'D:\pythonProject\db.sqlite3'
 
 def init_db():
-    global engine, Session, session
     engine = create_engine('sqlite:///database/db.sqlite3')
     Session = sessionmaker(bind=engine)
     session = Session()
+    return session
 
 class User(Base):
     __tablename__ = 'user'
@@ -34,11 +32,13 @@ class Reservation(Base):
     user = relationship('User', back_populates='reservations')
 
 def get_booking_info():
+    session = init_db()
     booking = session.query(Reservation).all()
     return booking
 
 
 def add_user(user):
+    session = init_db()
     new_id = session.query(func.max(User.id)).scalar() + 1
     new_user = User(id=new_id, full_name=user[0], email=user[1], password=user[2])
     session.add(new_user)
@@ -46,6 +46,7 @@ def add_user(user):
 
 
 def is_user_present(user_data):
+    session = init_db()
     user_with_email = session.query(User).filter_by(email=user_data).first()
     if user_with_email:
         return True
@@ -54,6 +55,7 @@ def is_user_present(user_data):
 
 
 def is_user_data_correct(user_data):
+    session = init_db()
     user_with_email = session.query(User).filter_by(email=user_data[0]).first()
     if user_with_email:
         return user_with_email.password == user_data[1]
@@ -61,9 +63,9 @@ def is_user_data_correct(user_data):
 
 
 def add_booking(new_event_data):
+    session = init_db()
     sql_date = datetime.strptime(new_event_data[2], "%Y-%m-%d").date()
     sql_time = datetime.strptime("10:30", "%H:%M").time()
-    print(session.query(Reservation).all())
     new_id = session.query(func.max(Reservation.id)).scalar() + 1
     user_name = session.query(User).filter_by(email=new_event_data[0]).first()
     usr_id = user_name.id
@@ -74,12 +76,13 @@ def add_booking(new_event_data):
 
 
 def is_event_present(event_data):
+    session = init_db()
     event = session.query(Reservation).filter_by(date=event_data[0]).first()
     if event:
         return event.time == event_data[1]
     return False
 
-
+#init_db()
 #init_db()
 #add_booking(["nicolasdomashke@gmail.com", "wsadsfs", "2023-12-25"])
 
