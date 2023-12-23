@@ -9,10 +9,8 @@ Session = None
 session = None
 
 def init_db():
-    global engine, Session, session, metadata, Base
-    metadata = MetaData()
-    Base = declarative_base()
-    engine = create_engine('sqlite:///db.sqlite3')
+    global engine, Session, session
+    engine = create_engine('sqlite:///database/db.sqlite3')
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -34,8 +32,6 @@ class Reservation(Base):
     status = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='reservations')
-
-
 
 def get_booking_info():
     booking = session.query(Reservation).all()
@@ -67,6 +63,7 @@ def is_user_data_correct(user_data):
 def add_booking(new_event_data):
     sql_date = datetime.strptime(new_event_data[2], "%Y-%m-%d").date()
     sql_time = datetime.strptime("10:30", "%H:%M").time()
+    print(session.query(Reservation).all())
     new_id = session.query(func.max(Reservation.id)).scalar() + 1
     user_name = session.query(User).filter_by(email=new_event_data[0]).first()
     usr_id = user_name.id
